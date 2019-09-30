@@ -7,6 +7,7 @@ import androidx.appcompat.widget.Toolbar;
 
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -16,7 +17,11 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        TextView tv = findViewById(R.id.tmpText);
+        tv.setText(Q.getTmpString());
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
