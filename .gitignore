@@ -34,6 +34,10 @@ gradle/*
 gradlew
 gradlew.bat
 settings.gradle
+# EXTRA INTELLIJ IGNORES
+app/proguard-rules.pro
+app/src/androidTest/
+app/src/test/
 
 # Built application files
 *.apk
