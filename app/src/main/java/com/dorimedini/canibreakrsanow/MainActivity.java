@@ -19,7 +19,7 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         TextView tv = findViewById(R.id.tmpText);
-        tv.setText(Q.getTmpString());
+        Q.getTmpString(this, tv);
     }
 
 
