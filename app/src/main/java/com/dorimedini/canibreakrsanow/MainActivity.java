@@ -1,5 +1,6 @@
 package com.dorimedini.canibreakrsanow;
 
+import android.app.Activity;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -9,7 +10,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 public class MainActivity extends AppCompatActivity {
+
+    private Timer mTimer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -18,8 +24,15 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        TextView tv = findViewById(R.id.tmpText);
-        Q.getTmpString(this, tv);
+        final TextView tv = findViewById(R.id.tmpText);
+        final Activity that = this;
+        mTimer = new Timer();
+        mTimer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                Q.getTmpString(that, tv);
+            }
+        }, 0, 5000);
     }
 
 
