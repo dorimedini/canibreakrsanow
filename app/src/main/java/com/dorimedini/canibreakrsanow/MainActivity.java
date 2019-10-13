@@ -1,6 +1,5 @@
 package com.dorimedini.canibreakrsanow;
 
-import android.app.Activity;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -8,14 +7,19 @@ import androidx.appcompat.widget.Toolbar;
 
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.TextView;
-
-import java.util.Timer;
-import java.util.TimerTask;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 
 public class MainActivity extends AppCompatActivity {
 
-    private Timer mTimer;
+    private static final String TAG = "MainActivity";
+
+    private EditText mEditN;
+    private EditText mEditA;
+    private Button mGoBtn;
+
+    private Q mQ;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,17 +28,27 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        final TextView tv = findViewById(R.id.tmpText);
-        final Activity that = this;
-        mTimer = new Timer();
-        mTimer.scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run() {
-                Q.getTmpString(that, tv);
-            }
-        }, 0, 5000);
+        mEditN = findViewById(R.id.edittext_N);
+        mEditA = findViewById(R.id.edittext_A);
+        mGoBtn = findViewById(R.id.go_btn);
+
+        mQ = new Q(this);
     }
 
+    public void onClickGoBtn(View btn) {
+        mGoBtn.setEnabled(false);
+        mEditN.setEnabled(false);
+        mEditA.setEnabled(false);
+        final int n = Integer.parseInt(mEditN.getText().toString());
+        final int a = Integer.parseInt(mEditA.getText().toString());
+        mQ.requestJob(n, a);
+    }
+
+    public void onResponseArrived(final String response) {
+        mGoBtn.setEnabled(true);
+        mEditN.setEnabled(true);
+        mEditA.setEnabled(true);
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

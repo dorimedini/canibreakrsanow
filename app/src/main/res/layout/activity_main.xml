@@ -19,16 +19,56 @@
             app:popupTheme="@style/AppTheme.PopupOverlay" />
 
     </com.google.android.material.appbar.AppBarLayout>
-
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-        <TextView
-            android:id="@+id/tmpText"
+        android:layout_height="wrap_content">
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:gravity="center"
-            android:text="TextView" />
-    </LinearLayout>
+            android:orientation="vertical">
+            <TextView
+                android:id="@+id/textview_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/top_to_title"
+                android:textAlignment="center"
+                android:text="@string/schor_title"
+                android:textSize="@dimen/title_text_size"
+                />
+            <EditText
+                android:id="@+id/edittext_N"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/title_to_N"
+                android:inputType="number"
+                />
+            <EditText
+                android:id="@+id/edittext_A"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/N_to_A"
+                android:inputType="number"
+                />
+            <TextView
+                android:id="@+id/textview_log"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:layout_marginTop="@dimen/A_to_log"
+                />
+            <Button
+                android:id="@+id/go_btn"
+                style="@style/Widget.AppCompat.Button.Colored"
+                android:layout_gravity="center"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/log_to_btn"
+                android:layout_marginBottom="@dimen/btn_to_bottom"
+                android:text="@string/compute_btn"
+                android:textSize="@dimen/go_btn_text_size"
+                android:onClick="onClickGoBtn"
+                />
+        </LinearLayout>
+    </ScrollView>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

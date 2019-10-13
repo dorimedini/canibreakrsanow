@@ -1,4 +1,6 @@
 <resources>
     <string name="app_name">Can I break RSA now?</string>
     <string name="action_about">About</string>
+    <string name="schor_title">Schormulator</string>
+    <string name="compute_btn">GO</string>
 </resources>

@@ -1,2 +1,11 @@
 <resources>
+    <dimen name="top_to_title">100dp</dimen>
+    <dimen name="title_to_N">50dp</dimen>
+    <dimen name="N_to_A">20dp</dimen>
+    <dimen name="A_to_log">50dp</dimen>
+    <dimen name="log_to_btn">50dp</dimen>
+    <dimen name="btn_to_bottom">50dp</dimen>
+
+    <dimen name="title_text_size">30sp</dimen>
+    <dimen name="go_btn_text_size">22sp</dimen>
 </resources>
