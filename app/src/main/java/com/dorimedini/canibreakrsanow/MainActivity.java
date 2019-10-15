@@ -14,12 +14,16 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.dorimedini.canibreakrsanow.models.Backend;
+import com.dorimedini.canibreakrsanow.models.QResponse;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
+    private final SimpleDateFormat dateFormatter = new SimpleDateFormat("hh:mm:ss");
 
     private EditText mEditN;
     private EditText mEditA;
@@ -63,7 +67,17 @@ public class MainActivity extends AppCompatActivity {
         disableUi();
         final int n = Integer.parseInt(mEditN.getText().toString());
         final int a = Integer.parseInt(mEditA.getText().toString());
-        mQ.requestJob(n, a);
+        mQ.requestJob(n, a, new Consumer<QResponse>() {
+            @Override
+            public void accept(QResponse qResponse) {
+                mLogText.setText(String.format("Received response at %s:\n%s",
+                        dateFormatter.format(Calendar.getInstance().getTime()),
+                        qResponse.getServerResponse()));
+                if (qResponse.isInFinalState()) {
+                    enableUi();
+                }
+            }
+        });
     }
 
     public void onClickBackendsBtn(View btn) {
@@ -85,10 +99,6 @@ public class MainActivity extends AppCompatActivity {
                 enableUi();
             }
         });
-    }
-
-    public void onResponseArrived(final String response) {
-        enableUi();
     }
 
     @Override
