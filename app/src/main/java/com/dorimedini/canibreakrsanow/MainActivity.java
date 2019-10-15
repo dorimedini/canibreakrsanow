@@ -4,12 +4,18 @@ import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.util.Consumer;
 
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
+
+import com.dorimedini.canibreakrsanow.models.Backend;
+
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -18,6 +24,8 @@ public class MainActivity extends AppCompatActivity {
     private EditText mEditN;
     private EditText mEditA;
     private Button mGoBtn;
+    private Button mBackendsBtn;
+    private TextView mLogText;
 
     private Q mQ;
 
@@ -31,23 +39,56 @@ public class MainActivity extends AppCompatActivity {
         mEditN = findViewById(R.id.edittext_N);
         mEditA = findViewById(R.id.edittext_A);
         mGoBtn = findViewById(R.id.go_btn);
+        mBackendsBtn = findViewById(R.id.backends_btn);
+        mLogText = findViewById(R.id.textview_log);
 
         mQ = new Q(this);
     }
 
-    public void onClickGoBtn(View btn) {
+    private void disableUi() {
         mGoBtn.setEnabled(false);
         mEditN.setEnabled(false);
         mEditA.setEnabled(false);
+        mBackendsBtn.setEnabled(false);
+    }
+
+    private void enableUi() {
+        mGoBtn.setEnabled(true);
+        mEditN.setEnabled(true);
+        mEditA.setEnabled(true);
+        mBackendsBtn.setEnabled(true);
+    }
+
+    public void onClickGoBtn(View btn) {
+        disableUi();
         final int n = Integer.parseInt(mEditN.getText().toString());
         final int a = Integer.parseInt(mEditA.getText().toString());
         mQ.requestJob(n, a);
     }
 
+    public void onClickBackendsBtn(View btn) {
+        disableUi();
+        mQ.getBackends(new Consumer<ArrayList<Backend>>() {
+            @Override
+            public void accept(ArrayList<Backend> backends) {
+                String backendsStr = "Available backends:";
+                for (Backend backend: backends) {
+                    backendsStr = backendsStr.concat(String.format(
+                            "\n<name=%s, sim=%s, qubits=%d, pending_jobs=%d>",
+                            backend.getName(),
+                            backend.isSimulator() ? "true" : "false",
+                            backend.getnQubits(),
+                            backend.getPendingJobs()
+                        ));
+                }
+                mLogText.setText(backendsStr);
+                enableUi();
+            }
+        });
+    }
+
     public void onResponseArrived(final String response) {
-        mGoBtn.setEnabled(true);
-        mEditN.setEnabled(true);
-        mEditA.setEnabled(true);
+        enableUi();
     }
 
     @Override

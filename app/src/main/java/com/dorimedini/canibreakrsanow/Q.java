@@ -11,6 +11,9 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.dorimedini.canibreakrsanow.models.Backend;
+
+import java.util.ArrayList;
 
 import androidx.core.util.Consumer;
 
@@ -27,8 +30,23 @@ class Q {
         mActivity = activity;
     }
 
+    public void getBackends(final Consumer<ArrayList<Backend>> onResult) {
+        getPathForUiThread("get_backends",
+                new Consumer<String>() {
+                    @Override
+                    public void accept(String s) {
+                        onResult.accept(Backend.fromJSON(s));
+                    }
+                });
+    }
+
     private String cleanURL(final String url) {
         return url;  // YOLO
+    }
+
+    private void getPathForUiThread(final String path,
+                                    final Consumer<String> onResponse) {
+        getPathForUiThread(path, onResponse, null);
     }
 
     private void getPathForUiThread(final String path,
@@ -58,12 +76,14 @@ class Q {
                     @Override
                     public void onErrorResponse(final VolleyError error) {
                         Log.e(TAG, "Got error: " + error.toString());
-                        mActivity.runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                onError.accept(error);
-                            }
-                        });
+                        if (onError != null) {
+                            mActivity.runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    onError.accept(error);
+                                }
+                            });
+                        }
                     }
                 });
         queue.add(stringRequest);

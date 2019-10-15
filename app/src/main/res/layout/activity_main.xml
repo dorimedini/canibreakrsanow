@@ -56,18 +56,33 @@
                 android:gravity="center"
                 android:layout_marginTop="@dimen/A_to_log"
                 />
-            <Button
-                android:id="@+id/go_btn"
-                style="@style/Widget.AppCompat.Button.Colored"
-                android:layout_gravity="center"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:gravity="center"
                 android:layout_marginTop="@dimen/log_to_btn"
                 android:layout_marginBottom="@dimen/btn_to_bottom"
-                android:text="@string/compute_btn"
-                android:textSize="@dimen/go_btn_text_size"
-                android:onClick="onClickGoBtn"
-                />
+                android:orientation="horizontal"
+                >
+                <Button
+                    android:id="@+id/go_btn"
+                    style="@style/Widget.AppCompat.Button.Colored"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/compute_btn"
+                    android:textSize="@dimen/go_btn_text_size"
+                    android:onClick="onClickGoBtn"
+                    />
+                <Button
+                    android:id="@+id/backends_btn"
+                    style="@style/Widget.AppCompat.Button.Colored"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/backends_btn"
+                    android:textSize="@dimen/go_btn_text_size"
+                    android:onClick="onClickBackendsBtn"
+                    />
+            </LinearLayout>
         </LinearLayout>
     </ScrollView>
 

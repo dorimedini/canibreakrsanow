@@ -3,4 +3,5 @@
     <string name="action_about">About</string>
     <string name="schor_title">Schormulator</string>
     <string name="compute_btn">GO</string>
+    <string name="backends_btn">BACKENDS</string>
 </resources>
