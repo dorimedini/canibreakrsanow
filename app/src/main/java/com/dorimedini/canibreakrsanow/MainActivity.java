@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.util.Consumer;
 
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -19,6 +20,7 @@ import com.dorimedini.canibreakrsanow.models.QResponse;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -30,6 +32,7 @@ public class MainActivity extends AppCompatActivity {
     private Button mGoBtn;
     private Button mBackendsBtn;
     private TextView mLogText;
+    private TextView mPeriodCandidates;
 
     private Q mQ;
 
@@ -45,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
         mGoBtn = findViewById(R.id.go_btn);
         mBackendsBtn = findViewById(R.id.backends_btn);
         mLogText = findViewById(R.id.textview_log);
+        mPeriodCandidates = findViewById(R.id.period_candidates);
 
         mQ = new Q(this);
     }
@@ -65,6 +69,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void onClickGoBtn(View btn) {
         disableUi();
+        mPeriodCandidates.setText("");
         final int n = Integer.parseInt(mEditN.getText().toString());
         final int a = Integer.parseInt(mEditA.getText().toString());
         mQ.requestJob(n, a, new Consumer<QResponse>() {
@@ -75,6 +80,19 @@ public class MainActivity extends AppCompatActivity {
                         qResponse.getServerResponse()));
                 if (qResponse.isInFinalState()) {
                     enableUi();
+                }
+                if (qResponse.isDone() && qResponse.getResult() != null) {
+                    ArrayList<Map.Entry<Integer, Integer>> entries = qResponse.resultsToEntries(5);
+                    mPeriodCandidates.setText("Possible periods: ");
+                    boolean first = true;
+                    for (Map.Entry<Integer, Integer> entry: entries) {
+                        if (first) {
+                            mPeriodCandidates.append(String.format("%d", entry.getKey()));
+                            first = false;
+                        } else {
+                            mPeriodCandidates.append(String.format(", %d", entry.getKey()));
+                        }
+                    }
                 }
             }
         });

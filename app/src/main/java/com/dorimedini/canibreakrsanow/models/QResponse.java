@@ -7,6 +7,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Map;
 
 import androidx.annotation.Nullable;
 
@@ -24,7 +25,7 @@ public class QResponse {
     private final int nQubits;
     private final String serverResponse;
     private final int queuePosition;
-    private final JSONObject result;
+    private final ShorResult result;
     private final String error;
 
     private QResponse(final String key,
@@ -34,7 +35,7 @@ public class QResponse {
                       final int nQubits,
                       final String serverResponse,
                       final int queuePosition,
-                      final @Nullable JSONObject result,
+                      final @Nullable ShorResult result,
                       final @Nullable String error) {
         this.key = key;
         this.status = status;
@@ -59,7 +60,7 @@ public class QResponse {
                     obj.getInt("n_qubits"),
                     obj.getString("server_response"),
                     obj.getInt("queue_position"),
-                    obj.isNull("result") ? null : obj.getJSONObject("result"),
+                    obj.isNull("result") ? null : new ShorResult(obj.getJSONObject("result")),
                     obj.isNull("error") ? null : obj.getString("error")
             );
         } catch (JSONException e) {
@@ -68,8 +69,16 @@ public class QResponse {
         return qResponse;
     }
 
+    public ArrayList<Map.Entry<Integer, Integer>> resultsToEntries(final int topResults) {
+        return result == null ? null : result.topResults(topResults);
+    }
+
     public boolean isInFinalState() {
         return FINAL_STATES.contains(status);
+    }
+
+    public boolean isDone() {
+        return status.equals("DONE");
     }
 
     public String getKey() {
@@ -100,7 +109,7 @@ public class QResponse {
         return queuePosition;
     }
 
-    public JSONObject getResult() {
+    public ShorResult getResult() {
         return result;
     }
 
