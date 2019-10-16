@@ -49,27 +49,11 @@
                 android:layout_marginTop="@dimen/title_to_N"
                 android:inputType="number"
                 />
-            <EditText
-                android:id="@+id/edittext_A"
-                android:hint="@string/a_placeholder_txt"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/N_to_A"
-                android:inputType="number"
-                />
-            <TextView
-                android:id="@+id/textview_log"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:layout_marginTop="@dimen/A_to_log"
-                />
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:layout_marginTop="@dimen/log_to_btn"
-                android:layout_marginBottom="@dimen/btn_to_bottom"
+                android:layout_marginTop="@dimen/N_to_btn"
                 android:orientation="horizontal"
                 >
                 <Button
@@ -91,6 +75,14 @@
                     android:onClick="onClickBackendsBtn"
                     />
             </LinearLayout>
+            <TextView
+                android:id="@+id/textview_log"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:layout_marginTop="@dimen/btn_to_log"
+                android:layout_marginBottom="@dimen/log_to_bottom"
+                />
         </LinearLayout>
     </ScrollView>
 

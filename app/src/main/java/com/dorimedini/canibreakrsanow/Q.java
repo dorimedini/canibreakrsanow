@@ -15,7 +15,9 @@ import com.android.volley.toolbox.Volley;
 import com.dorimedini.canibreakrsanow.models.Backend;
 import com.dorimedini.canibreakrsanow.models.QResponse;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Random;
 
 import androidx.core.util.Consumer;
 
@@ -28,6 +30,15 @@ class Q {
 
     private Handler mJobUpdateHandler;
     private final MainActivity mActivity;
+
+    static int getRandomA(final int modulo) {
+        Random r = new Random();
+        BigInteger a = BigInteger.valueOf(r.nextInt(modulo - 2) + 2); // 2 <= a <= modulo-1
+        while (a.gcd(BigInteger.valueOf(modulo)).intValue() != 1) {
+            a = BigInteger.valueOf(r.nextInt(modulo - 2) + 2);
+        }
+        return a.intValue();
+    }
 
     Q(final MainActivity activity) {
         mActivity = activity;

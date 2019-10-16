@@ -29,7 +29,6 @@ public class MainActivity extends AppCompatActivity {
     private final SimpleDateFormat dateFormatter = new SimpleDateFormat("hh:mm:ss");
 
     private EditText mEditN;
-    private EditText mEditA;
     private Button mGoBtn;
     private Button mBackendsBtn;
     private TextView mLogText;
@@ -45,7 +44,6 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         mEditN = findViewById(R.id.edittext_N);
-        mEditA = findViewById(R.id.edittext_A);
         mGoBtn = findViewById(R.id.go_btn);
         mBackendsBtn = findViewById(R.id.backends_btn);
         mLogText = findViewById(R.id.textview_log);
@@ -57,14 +55,12 @@ public class MainActivity extends AppCompatActivity {
     private void disableUi() {
         mGoBtn.setEnabled(false);
         mEditN.setEnabled(false);
-        mEditA.setEnabled(false);
         mBackendsBtn.setEnabled(false);
     }
 
     private void enableUi() {
         mGoBtn.setEnabled(true);
         mEditN.setEnabled(true);
-        mEditA.setEnabled(true);
         mBackendsBtn.setEnabled(true);
     }
 
@@ -72,7 +68,8 @@ public class MainActivity extends AppCompatActivity {
         disableUi();
         mPeriodCandidates.setText("");
         final int n = Integer.parseInt(mEditN.getText().toString());
-        final int a = Integer.parseInt(mEditA.getText().toString());
+        final int a = Q.getRandomA(n);
+        mPeriodCandidates.setText(String.format("Attempting to factor N=%d using a=%d", n, a));
         mQ.requestJob(n, a, new Consumer<QResponse>() {
             @Override
             public void accept(QResponse qResponse) {
@@ -101,6 +98,7 @@ public class MainActivity extends AppCompatActivity {
                             mPeriodCandidates.append(String.format(", %d", entry.getKey()));
                         }
                     }
+                    mPeriodCandidates.append("\nTry again (maybe will work with a dfferent value of a?)");
                 }
             }
         });
