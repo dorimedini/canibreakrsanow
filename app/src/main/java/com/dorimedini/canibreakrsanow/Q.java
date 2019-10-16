@@ -2,7 +2,6 @@ package com.dorimedini.canibreakrsanow;
 
 
 import android.net.Uri;
-import android.os.Handler;
 import android.util.Log;
 import android.widget.TextView;
 
@@ -27,8 +26,6 @@ class Q {
     private static final String scheme = "http";
     private static final String authority = "34.70.178.98:5000";
 
-
-    private Handler mJobUpdateHandler;
     private final MainActivity mActivity;
 
     static int getRandomA(final int modulo) {
@@ -42,7 +39,6 @@ class Q {
 
     Q(final MainActivity activity) {
         mActivity = activity;
-        mJobUpdateHandler = new Handler();
     }
 
     public void getBackends(final Consumer<ArrayList<Backend>> onResult) {
@@ -104,14 +100,14 @@ class Q {
         queue.add(stringRequest);
     }
 
-    void requestJob(final int n, final int a, final Consumer<QResponse> onUpdate) {
+    void requestJob(final int n, final int a, final Consumer<QResponse> onResponse) {
         getPathForUiThread(String.format("new_job/%d/%d", n, a),
                 new Consumer<String>() {
                     @Override
                     public void accept(String response) {
                         QResponse qResponse = QResponse.fromJSON(response);
-                        if (onUpdate != null) {
-                            onUpdate.accept(qResponse);
+                        if (onResponse != null) {
+                            onResponse.accept(qResponse);
                         }
                         if (qResponse == null) {
                             Log.e(TAG, "Got null response from server");
@@ -125,12 +121,6 @@ class Q {
                         }
                         Log.i(TAG, String.format("Job (N=%d,a=%d) updated, state: %s",
                                                  n, a, status));
-                        mJobUpdateHandler.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                requestJob(n, a, onUpdate);
-                            }
-                        }, 3000);
                     }
                 },
                 new Consumer<VolleyError>() {
@@ -142,12 +132,22 @@ class Q {
                         } else {
                             Log.e(TAG, "TextView is null!");
                         }
-                        mJobUpdateHandler.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                requestJob(n, a, onUpdate);
-                            }
-                        }, 3000);
+                    }
+                });
+    }
+
+    void requestStatus(final int n, final int a, final Consumer<QResponse> onResponse) {
+        getPathForUiThread(String.format("status/%d/%d", n, a),
+                onResponse == null ? null : new Consumer<String>() {
+                    @Override
+                    public void accept(String response) {
+                        onResponse.accept(QResponse.fromJSON(response));
+                    }
+                },
+                new Consumer<VolleyError>() {
+                    @Override
+                    public void accept(VolleyError volleyError) {
+                        Log.e(TAG, String.format("Got error querying status: %s", volleyError.toString()));
                     }
                 });
     }

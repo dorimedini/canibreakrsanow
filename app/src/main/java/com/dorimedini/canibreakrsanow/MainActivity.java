@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.util.Consumer;
 
+import android.os.Handler;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -26,6 +27,7 @@ import java.util.Map;
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
+    private static final int UPDATE_INTERVAL_MILLIS = 2000;
     private final SimpleDateFormat dateFormatter = new SimpleDateFormat("hh:mm:ss");
 
     private EditText mEditN;
@@ -35,6 +37,8 @@ public class MainActivity extends AppCompatActivity {
     private TextView mPeriodCandidates;
 
     private Q mQ;
+    private Handler mStatusUpdater;
+    private QResponse mLatestResponse;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +54,7 @@ public class MainActivity extends AppCompatActivity {
         mPeriodCandidates = findViewById(R.id.period_candidates);
 
         mQ = new Q(this);
+        mStatusUpdater = new Handler();
     }
 
     private void disableUi() {
@@ -64,42 +69,66 @@ public class MainActivity extends AppCompatActivity {
         mBackendsBtn.setEnabled(true);
     }
 
+    private void updateUiToResponse(int n, int a) {
+        mLogText.setText(String.format("Received response at %s:\n%s",
+                dateFormatter.format(Calendar.getInstance().getTime()),
+                mLatestResponse.getServerResponse()));
+        if (mLatestResponse.isInFinalState()) {
+            enableUi();
+        }
+        if (mLatestResponse.isDone() && mLatestResponse.getResult() != null) {
+            ShorResult result = mLatestResponse.getResult();
+            Log.e(TAG, String.format("Got entries, attempt to factor %d using candidate %s", n, result.toString()));
+            int factor = result.tryFactor(n, a);
+            if (factor > 1) {
+                mPeriodCandidates.setText(String.format("Found factor! %d factors into %d*%d", n, factor, n/factor));
+                return;
+            }
+            ArrayList<Map.Entry<Integer, Integer>> entries = mLatestResponse.resultsToEntries();
+            mPeriodCandidates.setText("Couldn't factor, but got the following periods: ");
+            boolean first = true;
+            for (Map.Entry<Integer, Integer> entry: entries) {
+                if (first) {
+                    mPeriodCandidates.append(String.format("%d", entry.getKey()));
+                    first = false;
+                } else {
+                    mPeriodCandidates.append(String.format(", %d", entry.getKey()));
+                }
+            }
+            mPeriodCandidates.append("\nTry again (maybe will work with a dfferent value of a?)");
+        }
+    }
+
     public void onClickGoBtn(View btn) {
         disableUi();
         mPeriodCandidates.setText("");
         final int n = Integer.parseInt(mEditN.getText().toString());
         final int a = Q.getRandomA(n);
         mPeriodCandidates.setText(String.format("Attempting to factor N=%d using a=%d", n, a));
+
+        mStatusUpdater.removeCallbacksAndMessages(null);
+
+        final Runnable runnableCode = new Runnable() {
+            @Override
+            public void run() {
+                updateUiToResponse(n, a);
+                if (!mLatestResponse.isInFinalState()) {
+                    mQ.requestStatus(n, a, new Consumer<QResponse>() {
+                        @Override
+                        public void accept(QResponse qResponse) {
+                            mLatestResponse = qResponse;
+                        }
+                    });
+                    mStatusUpdater.postDelayed(this, UPDATE_INTERVAL_MILLIS);
+                }
+            }
+        };
+
         mQ.requestJob(n, a, new Consumer<QResponse>() {
             @Override
             public void accept(QResponse qResponse) {
-                mLogText.setText(String.format("Received response at %s:\n%s",
-                        dateFormatter.format(Calendar.getInstance().getTime()),
-                        qResponse.getServerResponse()));
-                if (qResponse.isInFinalState()) {
-                    enableUi();
-                }
-                if (qResponse.isDone() && qResponse.getResult() != null) {
-                    ShorResult result = qResponse.getResult();
-                    Log.e(TAG, String.format("Got entries, attempt to factor %d using candidate %s", n, result.toString()));
-                    int factor = result.tryFactor(n, a);
-                    if (factor > 1) {
-                        mPeriodCandidates.setText(String.format("Found factor! %d factors into %d*%d", n, factor, n/factor));
-                        return;
-                    }
-                    ArrayList<Map.Entry<Integer, Integer>> entries = qResponse.resultsToEntries();
-                    mPeriodCandidates.setText("Couldn't factor, but got the following periods: ");
-                    boolean first = true;
-                    for (Map.Entry<Integer, Integer> entry: entries) {
-                        if (first) {
-                            mPeriodCandidates.append(String.format("%d", entry.getKey()));
-                            first = false;
-                        } else {
-                            mPeriodCandidates.append(String.format(", %d", entry.getKey()));
-                        }
-                    }
-                    mPeriodCandidates.append("\nTry again (maybe will work with a dfferent value of a?)");
-                }
+                mLatestResponse = qResponse;
+                mStatusUpdater.post(runnableCode);
             }
         });
     }
