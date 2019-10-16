@@ -4,4 +4,7 @@
     <string name="schor_title">Schormulator</string>
     <string name="compute_btn">GO</string>
     <string name="backends_btn">BACKENDS</string>
+
+    <string name="n_placeholder_txt">N (modulus)</string>
+    <string name="a_placeholder_txt">a (random, co-prime to N)</string>
 </resources>
