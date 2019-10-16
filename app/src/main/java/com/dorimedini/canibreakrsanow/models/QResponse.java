@@ -69,7 +69,11 @@ public class QResponse {
         return qResponse;
     }
 
-    public ArrayList<Map.Entry<Integer, Integer>> resultsToEntries(final int topResults) {
+    public ShorResult.EntryList resultsToEntries() {
+        return resultsToEntries(0);
+    }
+
+    public ShorResult.EntryList resultsToEntries(final int topResults) {
         return result == null ? null : result.topResults(topResults);
     }
 

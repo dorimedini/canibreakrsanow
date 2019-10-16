@@ -16,6 +16,7 @@ import android.widget.TextView;
 
 import com.dorimedini.canibreakrsanow.models.Backend;
 import com.dorimedini.canibreakrsanow.models.QResponse;
+import com.dorimedini.canibreakrsanow.models.ShorResult;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -82,8 +83,15 @@ public class MainActivity extends AppCompatActivity {
                     enableUi();
                 }
                 if (qResponse.isDone() && qResponse.getResult() != null) {
-                    ArrayList<Map.Entry<Integer, Integer>> entries = qResponse.resultsToEntries(5);
-                    mPeriodCandidates.setText("Possible periods: ");
+                    ShorResult result = qResponse.getResult();
+                    Log.e(TAG, String.format("Got entries, attempt to factor %d using candidate %s", n, result.toString()));
+                    int factor = result.tryFactor(n, a);
+                    if (factor > 1) {
+                        mPeriodCandidates.setText(String.format("Found factor! %d factors into %d*%d", n, factor, n/factor));
+                        return;
+                    }
+                    ArrayList<Map.Entry<Integer, Integer>> entries = qResponse.resultsToEntries();
+                    mPeriodCandidates.setText("Couldn't factor, but got the following periods: ");
                     boolean first = true;
                     for (Map.Entry<Integer, Integer> entry: entries) {
                         if (first) {
